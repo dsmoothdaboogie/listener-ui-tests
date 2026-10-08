@@ -1,0 +1,12 @@
+/* Type-checks the Node-side TypeScript that the Angular build doesn't cover: the generator, e2e tests and configs. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "noPropertyAccessFromIndexSignature": false
+  },
+  "include": ["tools/**/*.ts", "e2e/**/*.ts", "playwright.config.ts", "cypress.config.ts"]
+}

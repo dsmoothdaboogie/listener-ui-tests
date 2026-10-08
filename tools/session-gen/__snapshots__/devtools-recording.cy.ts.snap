@@ -1,0 +1,23 @@
+// Do not edit in place: regenerating overwrites this file, and the generator refuses
+// to overwrite a file that was changed. To keep it, copy it into your owned spec folder.
+// Source: devtools-recording.json (devtools mode)
+// NOTE: Recorded in Chrome DevTools, not the session recorder: no masking metadata or response waits.
+// NOTE: Step 7: "hover" isn't supported by the generator; skipped.
+import { T, TEST_ID_ATTR } from './selectors';
+
+const tid = (id: string) => `[${TEST_ID_ATTR}="${id}"]`;
+
+describe("Open new deal", () => {
+  it('replays the recorded flow', () => {
+    cy.viewport(1280, 800);
+
+    // On /deals
+    cy.visit("/deals");
+    cy.get(tid(T.dealSearch)).clear().type("Acme", { parseSpecialCharSequences: false });
+    cy.get(tid(T.dealSearch)).type("{enter}");
+    cy.get(tid(T.createDeal)).click();
+
+    // On /deals/new
+    cy.location('pathname').should('match', /\/deals\/new$/);
+  });
+});

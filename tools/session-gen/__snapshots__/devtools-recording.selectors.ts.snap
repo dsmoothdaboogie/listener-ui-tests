@@ -1,0 +1,12 @@
+// Do not edit in place: regenerating overwrites this file, and the generator refuses
+// to overwrite a file that was changed. To keep it, copy it into your owned spec folder.
+// Source: devtools-recording.json (devtools mode)
+// NOTE: Recorded in Chrome DevTools, not the session recorder: no masking metadata or response waits.
+// NOTE: Step 7: "hover" isn't supported by the generator; skipped.
+
+export const TEST_ID_ATTR = "data-testid";
+
+export const T = {
+  createDeal: "create-deal",
+  dealSearch: "deal-search",
+} as const;

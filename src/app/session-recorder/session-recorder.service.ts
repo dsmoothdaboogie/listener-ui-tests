@@ -439,20 +439,23 @@ export class SessionRecorder {
   }
 
   /**
-   * Drops a click on the same element immediately before a change or check: it only
-   * focused or toggled the control, and replaying both would double-toggle checkboxes.
-   * Returns any requests that click had triggered so they aren't lost.
+   * Drops clicks on the same element immediately before a change or check: they only
+   * focused or toggled the control, and replaying them would double-toggle checkboxes.
+   * Absorbs every such click, since users often click a field more than once before typing.
+   * Returns any requests those clicks had triggered so they aren't lost.
    */
   private absorbFocusClick(testId: string): XRecStep['network'] | undefined {
     const steps = this.flow!.steps;
-    const tail = steps.at(-1);
-    if (tail?.type !== 'click' || tail !== this.lastAction || tail.assertedEvents || tail[XREC]?.testId !== testId) {
-      return undefined;
+    let network: XRecStep['network'];
+    for (let tail = steps.at(-1); isFocusClick(tail, testId, this.lastAction); tail = steps.at(-1)) {
+      steps.pop();
+      this.lastAction = [...steps].reverse().find(isAction) ?? null;
+      for (const m of [...(tail[XREC]?.network ?? [])].reverse()) {
+        if (!network?.some((n) => n.method === m.method && n.urlPattern === m.urlPattern)) (network ??= []).unshift(m);
+      }
     }
-    steps.pop();
-    this.lastAction = [...steps].reverse().find(isAction) ?? null;
     this._count.set(steps.length - this.headerSteps);
-    return tail[XREC]?.network;
+    return network;
   }
 
   private pushAction(step: ActionStep): void {
@@ -555,6 +558,12 @@ export class SessionRecorder {
 
 function isAction(step: FlowStep): step is ActionStep {
   return step.type === 'click' || step.type === 'change' || step.type === 'keyDown';
+}
+
+/** A plain click on the element, not one the recorder wrote for a checkbox change (those carry `checked`). */
+function isFocusClick(step: FlowStep | undefined, testId: string, lastAction: ActionStep | null): step is ActionStep {
+  const x = step?.[XREC];
+  return step?.type === 'click' && step === lastAction && !step.assertedEvents && x?.testId === testId && x.checked === undefined;
 }
 
 function sessionOf(flow: UserFlow): XRecSession | null {

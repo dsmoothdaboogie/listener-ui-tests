@@ -1,7 +1,7 @@
 import type { ActionStep, Step, TestPlan } from './normalize';
-import { dataBlock, header, pathRegex, str, urlExpr, valueExpr } from './emit-utils';
+import { type PlanData, dataBlock, header, pathRegex, str, urlExpr, valueExpr } from './emit-utils';
 
-export function emitPlaywright(plan: TestPlan, keys: Map<string, string>, source: string): string {
+export function emitPlaywright(plan: TestPlan, keys: Map<string, string>, source: string, data: PlanData = {}): string {
   const tid = (id: string) => `page.getByTestId(T.${keys.get(id)})`;
   const loc = (s: ActionStep) => tid(s.target) + (s.inner ? `.locator(${str(s.inner)})` : '');
 
@@ -39,7 +39,7 @@ export function emitPlaywright(plan: TestPlan, keys: Map<string, string>, source
     `import { test, expect${plan.waits.length ? ', type Page' : ''} } from '@playwright/test';`,
     `import { T } from './selectors';`,
     '',
-    ...dataBlock(plan),
+    ...dataBlock(plan, data),
   ];
   if (plan.waits.length) {
     out.push(

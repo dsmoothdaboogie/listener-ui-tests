@@ -1,0 +1,64 @@
+{
+  "name": "Open new deal",
+  "meta": {
+    "source": "devtools",
+    "mode": "devtools",
+    "attribute": "data-testid",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    }
+  },
+  "sections": [
+    {
+      "route": "/deals",
+      "steps": [
+        {
+          "kind": "goto",
+          "parts": [
+            "",
+            "deals"
+          ]
+        },
+        {
+          "kind": "fill",
+          "value": {
+            "literal": "Acme"
+          },
+          "target": "deal-search",
+          "waits": []
+        },
+        {
+          "kind": "press",
+          "key": "Enter",
+          "target": "deal-search",
+          "waits": []
+        },
+        {
+          "kind": "click",
+          "target": "create-deal",
+          "waits": []
+        }
+      ]
+    },
+    {
+      "route": "/deals/new",
+      "steps": [
+        {
+          "kind": "expectPath",
+          "path": "/deals/new"
+        }
+      ]
+    }
+  ],
+  "targets": [
+    "deal-search",
+    "create-deal"
+  ],
+  "waits": [],
+  "placeholders": [],
+  "notes": [
+    "Recorded in Chrome DevTools, not the session recorder: no masking metadata or response waits.",
+    "Step 7: \"hover\" isn't supported by the generator; skipped."
+  ]
+}

@@ -1,0 +1,47 @@
+// Do not edit in place: regenerating overwrites this file, and the generator refuses
+// to overwrite a file that was changed. To keep it, copy it into your owned spec folder.
+// Source: sample-recording.json (test mode, app 4.2.0, uat, 2026-10-02T14:03:11.204Z)
+// Requires use.testIdAttribute = "data-testid" in playwright.config.ts.
+import { test, expect, type Page } from '@playwright/test';
+import { T } from './selectors';
+
+// Fill these in before running. Use synthetic data only.
+const data = {
+  counterpartyTaxId: '', // TODO: masked at capture (9 chars)
+};
+
+const response = (page: Page, method: string, path: RegExp) =>
+  page.waitForResponse((r) => r.request().method() === method && path.test(new URL(r.url()).pathname));
+
+test("Create deal", async ({ page }) => {
+  // Recorded at 1440x900
+  await test.step("On /deals", async () => {
+    await page.goto("/deals");
+    await page.getByTestId(T.dealSearch).fill("Acme");
+    await Promise.all([
+      response(page, "GET", /\/api\/deals$/),
+      page.getByTestId(T.dealSearch).press("Enter"),
+    ]);
+    await Promise.all([
+      response(page, "GET", /\/api\/reference\/currencies$/),
+      page.getByTestId(T.createDeal).click(),
+    ]);
+  });
+  await test.step("On /deals/new", async () => {
+    await expect(page).toHaveURL(/\/deals\/new(?:[?#]|$)/);
+    await page.getByTestId(T.dealName).locator("input").fill("Acme Bridge Loan");
+    await page.getByTestId(T.counterpartyTaxId).fill(data.counterpartyTaxId);
+    await page.getByTestId(T.dealCurrency).selectOption("USD");
+    await page.getByTestId(T.syndicatedFlag).locator("input[type=\"checkbox\"]").check();
+    await expect(page.getByTestId(T.dealSummary)).toContainText("Acme Bridge Loan");
+    await Promise.all([
+      response(page, "POST", /\/api\/deals$/),
+      response(page, "GET", /\/api\/deals\/[^/]+$/),
+      page.getByTestId(T.saveDeal).click(),
+    ]);
+  });
+  await test.step("On /deals/:id", async () => {
+    await expect(page).toHaveURL(/\/deals\/[^/]+(?:[?#]|$)/);
+    await expect(page.getByTestId(T.dealStatus)).toContainText("Draft");
+  });
+});

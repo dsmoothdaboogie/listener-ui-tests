@@ -1,0 +1,22 @@
+{
+  "title": "Open deal (recorded in Chrome DevTools Recorder)",
+  "selectorAttribute": "data-testid",
+  "steps": [
+    { "type": "setViewport", "width": 1280, "height": 720, "deviceScaleFactor": 1, "isMobile": false, "hasTouch": false, "isLandscape": true },
+    { "type": "navigate", "url": "http://localhost:4200/deals",
+      "assertedEvents": [{ "type": "navigation", "url": "http://localhost:4200/deals", "title": "Recorder reference app" }] },
+    { "type": "hover", "target": "main",
+      "selectors": [["[data-testid=\"deal-row-0\"]"], ["aria/Harbor Logistics refinancing"]] },
+    { "type": "click", "target": "main",
+      "selectors": [["[data-testid=\"deal-row-1\"]"], ["aria/Northwind bond issue"], ["xpath///*[@data-testid=\"deal-row-1\"]"], ["pierce/[data-testid=\"deal-row-1\"]"]],
+      "offsetX": 120, "offsetY": 18,
+      "assertedEvents": [{ "type": "navigation", "url": "http://localhost:4200/deals/10002", "title": "Recorder reference app" }] },
+    { "type": "waitForElement", "target": "main",
+      "selectors": [["[data-testid=\"deal-status\"]"], ["aria/Draft"]], "visible": true },
+    { "type": "click", "target": "main",
+      "selectors": [["[data-testid=\"back-to-deals\"]"], ["aria/All deals"]],
+      "offsetX": 30, "offsetY": 12,
+      "assertedEvents": [{ "type": "navigation", "url": "http://localhost:4200/deals", "title": "Recorder reference app" }] },
+    { "type": "waitForElement", "target": "main", "selectors": [["[data-testid=\"new-deal\"]"]], "visible": true }
+  ]
+}

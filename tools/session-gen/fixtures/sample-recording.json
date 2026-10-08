@@ -16,8 +16,8 @@
       }
     },
     { "type": "setViewport", "width": 1440, "height": 900, "deviceScaleFactor": 1, "isMobile": false, "hasTouch": false, "isLandscape": true },
-    { "type": "navigate", "target": "main", "url": "https://opus-uat.example.citi.net/deals",
-      "assertedEvents": [{ "type": "navigation", "url": "https://opus-uat.example.citi.net/deals" }] },
+    { "type": "navigate", "target": "main", "url": "https://uat.example.com/deals",
+      "assertedEvents": [{ "type": "navigation", "url": "https://uat.example.com/deals" }] },
     { "type": "change", "target": "main", "selectors": [["[data-testid=\"deal-search\"]"]], "value": "Acme",
       "x-rec": { "t": 2600, "route": "/deals", "testId": "deal-search" } },
     { "type": "keyDown", "target": "main", "key": "Enter",
@@ -25,7 +25,7 @@
         "network": [{ "method": "GET", "urlPattern": "/api/deals", "status": 200 }] } },
     { "type": "keyUp", "target": "main", "key": "Enter" },
     { "type": "click", "target": "main", "selectors": [["[data-testid=\"create-deal\"]"]], "offsetX": 42, "offsetY": 14,
-      "assertedEvents": [{ "type": "navigation", "url": "https://opus-uat.example.citi.net/deals/new" }],
+      "assertedEvents": [{ "type": "navigation", "url": "https://uat.example.com/deals/new" }],
       "x-rec": { "t": 4200, "route": "/deals", "testId": "create-deal",
         "network": [{ "method": "GET", "urlPattern": "/api/reference/currencies", "status": 200 }] } },
     { "type": "change", "target": "main", "selectors": [["[data-testid=\"deal-name\"] input"]], "value": "Acme Bridge Loan",
@@ -39,7 +39,7 @@
     { "type": "waitForElement", "target": "main", "selectors": [["[data-testid=\"deal-summary\"]"]], "visible": true,
       "x-rec": { "t": 11000, "route": "/deals/new", "testId": "deal-summary", "expectText": "Acme Bridge Loan" } },
     { "type": "click", "target": "main", "selectors": [["[data-testid=\"save-deal\"]"]], "offsetX": 30, "offsetY": 12,
-      "assertedEvents": [{ "type": "navigation", "url": "https://opus-uat.example.citi.net/deals/DL20931X" }],
+      "assertedEvents": [{ "type": "navigation", "url": "https://uat.example.com/deals/DL20931X" }],
       "x-rec": { "t": 12000, "route": "/deals/new", "testId": "save-deal",
         "network": [
           { "method": "POST", "urlPattern": "/api/deals", "status": 201 },

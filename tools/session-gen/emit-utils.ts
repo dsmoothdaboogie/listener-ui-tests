@@ -62,13 +62,29 @@ export function urlExpr(parts: UrlPart[]): string {
 
 export const valueExpr = (v: Value): string => ('literal' in v ? str(v.literal) : `data.${v.placeholder}`);
 
-export function dataBlock(plan: TestPlan): string[] {
+/** Values for placeholders, keyed by placeholder name (from --data). */
+export type PlanData = Readonly<Record<string, string>>;
+
+export function dataBlock(plan: TestPlan, data: PlanData = {}): string[] {
   if (plan.placeholders.length === 0) return [];
+  const missing = plan.placeholders.some((p) => !(p.key in data));
   return [
-    '// Fill these in before running. Use synthetic data only.',
+    missing ? '// Fill these in before running. Use synthetic data only.' : '// Synthetic data supplied with --data.',
     'const data = {',
-    ...plan.placeholders.map((p) => `  ${p.key}: '', // TODO: ${p.hint}`),
+    ...plan.placeholders.map((p) =>
+      p.key in data ? `  ${p.key}: ${str(data[p.key])},` : `  ${p.key}: '', // TODO: ${p.hint}`,
+    ),
     '};',
     '',
   ];
+}
+
+/** Throws unless every key in data names a placeholder in the plan. */
+export function checkData(plan: TestPlan, data: PlanData): void {
+  const known = new Set(plan.placeholders.map((p) => p.key));
+  const unknown = Object.keys(data).filter((k) => !known.has(k));
+  if (unknown.length) {
+    const expected = [...known].join(', ') || 'none';
+    throw new Error(`--data has unknown key(s): ${unknown.join(', ')}. This recording's placeholders: ${expected}.`);
+  }
 }

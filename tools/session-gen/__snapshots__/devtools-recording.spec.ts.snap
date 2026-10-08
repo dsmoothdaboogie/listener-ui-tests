@@ -1,0 +1,21 @@
+// Do not edit in place: regenerating overwrites this file, and the generator refuses
+// to overwrite a file that was changed. To keep it, copy it into your owned spec folder.
+// Source: devtools-recording.json (devtools mode)
+// NOTE: Recorded in Chrome DevTools, not the session recorder: no masking metadata or response waits.
+// NOTE: Step 7: "hover" isn't supported by the generator; skipped.
+// Requires use.testIdAttribute = "data-testid" in playwright.config.ts.
+import { test, expect } from '@playwright/test';
+import { T } from './selectors';
+
+test("Open new deal", async ({ page }) => {
+  // Recorded at 1280x800
+  await test.step("On /deals", async () => {
+    await page.goto("/deals");
+    await page.getByTestId(T.dealSearch).fill("Acme");
+    await page.getByTestId(T.dealSearch).press("Enter");
+    await page.getByTestId(T.createDeal).click();
+  });
+  await test.step("On /deals/new", async () => {
+    await expect(page).toHaveURL(/\/deals\/new(?:[?#]|$)/);
+  });
+});

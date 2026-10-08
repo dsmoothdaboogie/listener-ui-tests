@@ -1,0 +1,251 @@
+{
+  "title": "dev test recording 2026-10-08T02:35:49.414Z",
+  "selectorAttribute": "data-testid",
+  "steps": [
+    {
+      "type": "customStep",
+      "name": "x-rec/session",
+      "parameters": {
+        "schemaVersion": 2,
+        "mode": "test",
+        "attribute": "data-testid",
+        "appVersion": "0.0.0-dev",
+        "environment": "dev",
+        "startedAt": "2026-10-08T02:35:49.414Z",
+        "maskedTestIds": [
+          "counterparty-tax-id",
+          "approval-pin"
+        ],
+        "skippedInteractions": 1
+      }
+    },
+    {
+      "type": "setViewport",
+      "width": 1280,
+      "height": 720,
+      "deviceScaleFactor": 1,
+      "isMobile": false,
+      "hasTouch": false,
+      "isLandscape": true
+    },
+    {
+      "type": "navigate",
+      "target": "main",
+      "url": "http://localhost:4200/deals",
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "http://localhost:4200/deals"
+        }
+      ]
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "[data-testid=\"new-deal\"]"
+        ]
+      ],
+      "offsetX": 45,
+      "offsetY": 17,
+      "x-rec": {
+        "t": 248,
+        "route": "/deals",
+        "testId": "new-deal"
+      },
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "http://localhost:4200/deals/new"
+        }
+      ]
+    },
+    {
+      "type": "change",
+      "target": "main",
+      "selectors": [
+        [
+          "[data-testid=\"deal-name\"] input"
+        ]
+      ],
+      "value": "Acme bridge loan",
+      "x-rec": {
+        "t": 412,
+        "route": "/deals/new",
+        "testId": "deal-name",
+        "inner": "input"
+      }
+    },
+    {
+      "type": "change",
+      "target": "main",
+      "selectors": [
+        [
+          "[data-testid=\"counterparty-tax-id\"] input"
+        ]
+      ],
+      "value": "",
+      "x-rec": {
+        "t": 417,
+        "route": "/deals/new",
+        "testId": "counterparty-tax-id",
+        "inner": "input",
+        "masked": {
+          "length": 9
+        }
+      }
+    },
+    {
+      "type": "change",
+      "target": "main",
+      "selectors": [
+        [
+          "[data-testid=\"approval-pin\"] input[type=\"password\"]"
+        ]
+      ],
+      "value": "",
+      "x-rec": {
+        "t": 422,
+        "route": "/deals/new",
+        "testId": "approval-pin",
+        "inner": "input[type=\"password\"]",
+        "masked": {
+          "length": 4
+        }
+      }
+    },
+    {
+      "type": "change",
+      "target": "main",
+      "selectors": [
+        [
+          "[data-testid=\"deal-currency\"]"
+        ]
+      ],
+      "value": "EUR",
+      "x-rec": {
+        "t": 423,
+        "route": "/deals/new",
+        "testId": "deal-currency",
+        "control": "select"
+      }
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "[data-testid=\"deal-desk\"]"
+        ]
+      ],
+      "offsetX": 210,
+      "offsetY": 38,
+      "x-rec": {
+        "t": 445,
+        "route": "/deals/new",
+        "testId": "deal-desk"
+      }
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "[data-testid=\"deal-desk-option-dcm\"]"
+        ]
+      ],
+      "offsetX": 210,
+      "offsetY": 24,
+      "x-rec": {
+        "t": 697,
+        "route": "/deals/new",
+        "testId": "deal-desk-option-dcm"
+      }
+    },
+    {
+      "type": "change",
+      "target": "main",
+      "selectors": [
+        [
+          "[data-testid=\"deal-close-date\"] input"
+        ]
+      ],
+      "value": "10/15/2026",
+      "x-rec": {
+        "t": 945,
+        "route": "/deals/new",
+        "testId": "deal-close-date",
+        "inner": "input"
+      }
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "[data-testid=\"deal-confidential\"]"
+        ]
+      ],
+      "offsetX": 210,
+      "offsetY": 11,
+      "x-rec": {
+        "t": 952,
+        "route": "/deals/new",
+        "testId": "deal-confidential",
+        "inner": "input[type=\"checkbox\"]",
+        "checked": true
+      }
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "[data-testid=\"save-deal\"]"
+        ]
+      ],
+      "offsetX": 30,
+      "offsetY": 17,
+      "x-rec": {
+        "t": 1011,
+        "route": "/deals/new",
+        "testId": "save-deal",
+        "network": [
+          {
+            "method": "POST",
+            "urlPattern": "/api/deals",
+            "status": 201
+          },
+          {
+            "method": "GET",
+            "urlPattern": "/api/deals/*",
+            "status": 200
+          }
+        ]
+      },
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "http://localhost:4200/deals/10042"
+        }
+      ]
+    },
+    {
+      "type": "waitForElement",
+      "target": "main",
+      "selectors": [
+        [
+          "[data-testid=\"deal-status\"]"
+        ]
+      ],
+      "visible": true,
+      "x-rec": {
+        "t": 1195,
+        "route": "/deals/:id",
+        "testId": "deal-status",
+        "expectText": "Draft"
+      }
+    }
+  ]
+}

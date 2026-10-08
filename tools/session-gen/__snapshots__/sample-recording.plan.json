@@ -1,0 +1,176 @@
+{
+  "name": "Create deal",
+  "meta": {
+    "source": "session-recorder",
+    "mode": "test",
+    "attribute": "data-testid",
+    "appVersion": "4.2.0",
+    "environment": "uat",
+    "startedAt": "2026-10-02T14:03:11.204Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "sections": [
+    {
+      "route": "/deals",
+      "steps": [
+        {
+          "kind": "goto",
+          "parts": [
+            "",
+            "deals"
+          ]
+        },
+        {
+          "kind": "fill",
+          "value": {
+            "literal": "Acme"
+          },
+          "target": "deal-search",
+          "waits": []
+        },
+        {
+          "kind": "press",
+          "key": "Enter",
+          "target": "deal-search",
+          "waits": [
+            {
+              "alias": "getApiDeals",
+              "method": "GET",
+              "path": "/api/deals"
+            }
+          ]
+        },
+        {
+          "kind": "click",
+          "target": "create-deal",
+          "waits": [
+            {
+              "alias": "getReferenceCurrencies",
+              "method": "GET",
+              "path": "/api/reference/currencies"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "route": "/deals/new",
+      "steps": [
+        {
+          "kind": "expectPath",
+          "path": "/deals/new"
+        },
+        {
+          "kind": "fill",
+          "value": {
+            "literal": "Acme Bridge Loan"
+          },
+          "target": "deal-name",
+          "waits": [],
+          "inner": "input"
+        },
+        {
+          "kind": "fill",
+          "value": {
+            "placeholder": "counterpartyTaxId"
+          },
+          "target": "counterparty-tax-id",
+          "waits": []
+        },
+        {
+          "kind": "select",
+          "value": {
+            "literal": "USD"
+          },
+          "target": "deal-currency",
+          "waits": []
+        },
+        {
+          "kind": "check",
+          "checked": true,
+          "target": "syndicated-flag",
+          "waits": [],
+          "inner": "input[type=\"checkbox\"]"
+        },
+        {
+          "kind": "expectText",
+          "target": "deal-summary",
+          "text": "Acme Bridge Loan"
+        },
+        {
+          "kind": "click",
+          "target": "save-deal",
+          "waits": [
+            {
+              "alias": "postApiDeals",
+              "method": "POST",
+              "path": "/api/deals"
+            },
+            {
+              "alias": "getApiDeals2",
+              "method": "GET",
+              "path": "/api/deals/*"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "route": "/deals/:id",
+      "steps": [
+        {
+          "kind": "expectPath",
+          "path": "/deals/:id"
+        },
+        {
+          "kind": "expectText",
+          "target": "deal-status",
+          "text": "Draft"
+        }
+      ]
+    }
+  ],
+  "targets": [
+    "deal-search",
+    "create-deal",
+    "deal-name",
+    "counterparty-tax-id",
+    "deal-currency",
+    "syndicated-flag",
+    "deal-summary",
+    "save-deal",
+    "deal-status"
+  ],
+  "waits": [
+    {
+      "alias": "getApiDeals",
+      "method": "GET",
+      "path": "/api/deals"
+    },
+    {
+      "alias": "getReferenceCurrencies",
+      "method": "GET",
+      "path": "/api/reference/currencies"
+    },
+    {
+      "alias": "postApiDeals",
+      "method": "POST",
+      "path": "/api/deals"
+    },
+    {
+      "alias": "getApiDeals2",
+      "method": "GET",
+      "path": "/api/deals/*"
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "counterpartyTaxId",
+      "hint": "masked at capture (9 chars)"
+    }
+  ],
+  "notes": []
+}

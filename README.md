@@ -19,51 +19,57 @@ src/app/session-recorder/      Angular 20+ library (standalone, signals, zoneles
   session-recorder.service.ts  Listeners, debouncing, persistence, toggle, entitlement
   session-recorder.interceptor.ts  Correlates HttpClient requests to actions
   recorder-badge.component.ts  Visible indicator with Add check / Stop and save / Discard
-  *.spec.ts                    Jest specs for the policy and the service
+  *.spec.ts                    Vitest specs (Angular Testing Library for DOM behaviour)
+  VERSION, COPYING.md          Version and copy/wiring instructions
 tools/session-gen/             Node CLI: normalise once, emit per framework
   normalize.ts                 User flow (ours or Chrome's) -> framework-agnostic test plan
   emit-playwright.ts           Plan -> *.spec.ts
   emit-cypress.ts              Plan -> *.cy.ts
   emit-selectors.ts            Plan -> selectors.ts constants
   cli.ts                       Entry point; refuses to overwrite edited output
+  session-gen.spec.ts          Snapshot specs (__snapshots__/)
+  VERSION, COPYING.md          Version and copy instructions
   fixtures/sample-recording.json    from our recorder
   fixtures/devtools-recording.json  from Chrome's Recorder panel
 ```
 
-## Wiring
+## Copying it into your app
 
-`app.config.ts`
+This repo is the reference copy. Teams copy two folders into the same paths in their app:
 
-```ts
-import { inject } from '@angular/core';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideSessionRecorder, sessionRecorderInterceptor } from './session-recorder';
+- `src/app/session-recorder/`: see [its COPYING.md](src/app/session-recorder/COPYING.md) for wiring
+- `tools/session-gen/`: see [its COPYING.md](tools/session-gen/COPYING.md)
 
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes),
-    provideHttpClient(withInterceptors([sessionRecorderInterceptor, /* ...yours */])),
-    provideSessionRecorder({
-      mode: environment.recorderMode,          // only test builds set 'test'; unset = 'support'
-      attribute: 'data-testid',                // whatever your tagging skill writes
-      appVersion: environment.version,
-      environment: environment.name,
-      canRecord: () => inject(EntitlementService).hasRole$('UI_SESSION_RECORDER'),
-      ignoreRequests: ['/telemetry', '/heartbeat', /\/notifications\/poll/],
-      alwaysMask: [],                          // test-mode extras, e.g. 'counterparty-tax-id'
-      supportValueAllowList: [],               // support mode; needs security sign-off
-    }),
-  ],
-};
+Each folder has a `VERSION`. Compare yours with this repo's to see whether your copy is behind.
+Everything else here (the demo app, mock API, e2e tests, CI) exists to test those two folders.
+
+## Working in this repo
+
+```
+npm ci
+npm start                 demo app on :4200 with the mock API on :4300 (proxied at /api)
+npm test                  recorder specs (Vitest + Angular Testing Library, via ng test)
+npm run test:node         generator snapshot specs and the check scripts
+npm run typecheck         generator, e2e and Cypress TypeScript
+npm run check             copy-boundary and production-mode checks
+npm run e2e:full-loop     Playwright records the demo's create-deal flow with the real recorder
+npm run e2e:generate      session-gen on recordings/*.json plus the full-loop recording
+npm run e2e:playwright    run the generated Playwright specs
+npm run e2e:cypress       run the generated Cypress specs
 ```
 
-Root template: `<rec-recorder-badge />` (import `RecorderBadgeComponent`).
+The demo app (`src/app/demo/`) covers the recorder's hard cases: a tagged wrapper around
+an input, a `data-rec-mask` section, a password field, a native select, a checkbox,
+`mat-select`, a datepicker and one untagged button. Its API is a small Node server
+(`demo-api/server.mjs`) behind the dev-server proxy, because Playwright and Cypress only
+see requests that reach the network.
 
-`playwright.config.ts`: `use: { testIdAttribute: 'data-testid' }`.
+CI (`.github/workflows/ci.yml`) runs all of the above. The full-loop job uploads its
+recording, and both generated-spec jobs regenerate from it, so a change that breaks
+recording, generation or replay turns CI red.
 
-`package.json`: `"session-gen": "tsx tools/session-gen/cli.ts"`.
-
-Fix the import path from `tools/session-gen` to the library if you move it (`normalize.ts`, `cli.ts`).
+If Cypress fails to start with `bad option: --no-sandbox` from a VS Code terminal, unset
+`ELECTRON_RUN_AS_NODE` (`env -u ELECTRON_RUN_AS_NODE npm run e2e:cypress`).
 
 ## Using it
 
@@ -74,8 +80,8 @@ Fix the import path from `tools/session-gen` to the library if you move it (`nor
 3. Stop and save downloads `recording-<mode>-<timestamp>.json`.
 4. `npm run session-gen -- recordings/create-deal.json --name "Create deal"`
    writes `e2e/generated/create-deal/` and `cypress/e2e/generated/create-deal/`.
-5. Fill in the `data` placeholders, run it, then copy it into your owned spec folder.
-   The generated folder is disposable.
+5. Fill in the `data` placeholders (or pass `--data values.json`), run it, then copy it
+   into your owned spec folder. The generated folder is disposable.
 
 Try it on the samples: `npm run session-gen -- tools/session-gen/fixtures/sample-recording.json --name "Create deal"`,
 and the same for `devtools-recording.json`.

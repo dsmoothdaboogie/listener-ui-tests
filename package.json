@@ -1,0 +1,60 @@
+{
+  "name": "listener-ui",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "node scripts/serve-demo.mjs",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "test:node": "vitest run",
+    "session-gen": "tsx tools/session-gen/cli.ts",
+    "e2e:full-loop": "playwright test --project=full-loop",
+    "e2e:generate": "node scripts/generate-e2e.mjs",
+    "e2e:playwright": "playwright test --project=generated",
+    "e2e:cypress": "start-server-and-test 'node scripts/serve-demo.mjs' http://localhost:4200 'cypress run'",
+    "check": "node scripts/check-boundaries.mjs && node scripts/check-prod-mode.mjs",
+    "typecheck": "tsc -p tsconfig.node.json && tsc -p tsconfig.spec.json --noEmit && tsc -p cypress/tsconfig.json --noEmit"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/cdk": "^20.2.14",
+    "@angular/common": "^20.3.0",
+    "@angular/compiler": "^20.3.0",
+    "@angular/core": "^20.3.0",
+    "@angular/forms": "^20.3.0",
+    "@angular/material": "^20.2.14",
+    "@angular/platform-browser": "^20.3.0",
+    "@angular/router": "^20.3.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.3.39",
+    "@angular/cli": "^20.3.39",
+    "@angular/compiler-cli": "^20.3.0",
+    "@playwright/test": "^1.64.0",
+    "@testing-library/angular": "^18.1.1",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/node": "^26.6.4",
+    "cypress": "^14.5.4",
+    "jsdom": "^27.0.1",
+    "start-server-and-test": "^2.1.5",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.2",
+    "vitest": "^3.2.7"
+  }
+}

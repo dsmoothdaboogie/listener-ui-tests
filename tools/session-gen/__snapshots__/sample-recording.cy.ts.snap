@@ -1,0 +1,44 @@
+// Do not edit in place: regenerating overwrites this file, and the generator refuses
+// to overwrite a file that was changed. To keep it, copy it into your owned spec folder.
+// Source: sample-recording.json (test mode, app 4.2.0, uat, 2026-10-02T14:03:11.204Z)
+import { T, TEST_ID_ATTR } from './selectors';
+
+const tid = (id: string) => `[${TEST_ID_ATTR}="${id}"]`;
+
+// Fill these in before running. Use synthetic data only.
+const data = {
+  counterpartyTaxId: '', // TODO: masked at capture (9 chars)
+};
+
+describe("Create deal", () => {
+  it('replays the recorded flow', () => {
+    cy.viewport(1440, 900);
+    cy.intercept({ method: "GET", url: /\/api\/deals(?:[?#]|$)/ }).as("getApiDeals");
+    cy.intercept({ method: "GET", url: /\/api\/reference\/currencies(?:[?#]|$)/ }).as("getReferenceCurrencies");
+    cy.intercept({ method: "POST", url: /\/api\/deals(?:[?#]|$)/ }).as("postApiDeals");
+    cy.intercept({ method: "GET", url: /\/api\/deals\/[^/]+(?:[?#]|$)/ }).as("getApiDeals2");
+
+    // On /deals
+    cy.visit("/deals");
+    cy.get(tid(T.dealSearch)).clear().type("Acme", { parseSpecialCharSequences: false });
+    cy.get(tid(T.dealSearch)).type("{enter}");
+    cy.wait("@getApiDeals");
+    cy.get(tid(T.createDeal)).click();
+    cy.wait("@getReferenceCurrencies");
+
+    // On /deals/new
+    cy.location('pathname').should('match', /\/deals\/new$/);
+    cy.get(tid(T.dealName)).find("input").clear().type("Acme Bridge Loan", { parseSpecialCharSequences: false });
+    cy.get(tid(T.counterpartyTaxId)).clear().type(data.counterpartyTaxId, { parseSpecialCharSequences: false });
+    cy.get(tid(T.dealCurrency)).select("USD");
+    cy.get(tid(T.syndicatedFlag)).find("input[type=\"checkbox\"]").check({ force: true });
+    cy.get(tid(T.dealSummary)).should('contain.text', "Acme Bridge Loan");
+    cy.get(tid(T.saveDeal)).click();
+    cy.wait("@postApiDeals");
+    cy.wait("@getApiDeals2");
+
+    // On /deals/:id
+    cy.location('pathname').should('match', /\/deals\/[^/]+$/);
+    cy.get(tid(T.dealStatus)).should('contain.text', "Draft");
+  });
+});

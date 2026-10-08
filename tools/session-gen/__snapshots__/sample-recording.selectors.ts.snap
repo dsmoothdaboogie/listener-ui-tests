@@ -1,0 +1,17 @@
+// Do not edit in place: regenerating overwrites this file, and the generator refuses
+// to overwrite a file that was changed. To keep it, copy it into your owned spec folder.
+// Source: sample-recording.json (test mode, app 4.2.0, uat, 2026-10-02T14:03:11.204Z)
+
+export const TEST_ID_ATTR = "data-testid";
+
+export const T = {
+  counterpartyTaxId: "counterparty-tax-id",
+  createDeal: "create-deal",
+  dealCurrency: "deal-currency",
+  dealName: "deal-name",
+  dealSearch: "deal-search",
+  dealStatus: "deal-status",
+  dealSummary: "deal-summary",
+  saveDeal: "save-deal",
+  syndicatedFlag: "syndicated-flag",
+} as const;

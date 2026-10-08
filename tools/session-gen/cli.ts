@@ -10,11 +10,12 @@ import { parseArgs } from 'node:util';
 import { emitCypress } from './emit-cypress';
 import { emitPlaywright } from './emit-playwright';
 import { emitSelectors } from './emit-selectors';
-import { GENERATED_MARK, selectorKeys } from './emit-utils';
+import { GENERATED_MARK, type PlanData, checkData, selectorKeys } from './emit-utils';
 import { normalize } from './normalize';
 
 const USAGE = `Usage: session-gen <user-flow.json>... [options]
   --name <text>            Test name (single recording only). Default: file name.
+  --data <file.json>       Values for the spec's data placeholders (single recording only)
   --targets <list>         playwright,cypress (default both)
   --playwright-out <dir>   Default e2e/generated
   --cypress-out <dir>      Default cypress/e2e/generated
@@ -25,6 +26,7 @@ function main(): number {
     allowPositionals: true,
     options: {
       name: { type: 'string' },
+      data: { type: 'string' },
       targets: { type: 'string', default: 'playwright,cypress' },
       'playwright-out': { type: 'string', default: 'e2e/generated' },
       'cypress-out': { type: 'string', default: 'cypress/e2e/generated' },
@@ -36,11 +38,17 @@ function main(): number {
     console.log(USAGE);
     return values.help ? 0 : 1;
   }
-  if (values.name && positionals.length > 1) {
-    console.error('--name can only be used with a single recording.');
+  if ((values.name || values.data) && positionals.length > 1) {
+    console.error('--name and --data can only be used with a single recording.');
     return 1;
   }
+  const data = values.data ? loadData(values.data) : {};
   const targets = new Set(values.targets.split(',').map((t) => t.trim()));
+  const unknownTargets = [...targets].filter((t) => t !== 'playwright' && t !== 'cypress');
+  if (unknownTargets.length || targets.size === 0) {
+    console.error(`--targets accepts playwright and cypress; got "${values.targets}".`);
+    return 1;
+  }
   let ok = true;
 
   for (const file of positionals) {
@@ -48,6 +56,7 @@ function main(): number {
     const name = values.name ?? basename(file).replace(/\.json$/i, '');
     const slug = slugify(name);
     const plan = normalize(session, name);
+    checkData(plan, data);
     const keys = selectorKeys(plan.targets);
     const source = basename(file);
     const selectors = emitSelectors(plan, keys, source);
@@ -55,30 +64,40 @@ function main(): number {
     if (targets.has('playwright')) {
       ok = write(join(values['playwright-out'], slug), {
         'selectors.ts': selectors,
-        [`${slug}.spec.ts`]: emitPlaywright(plan, keys, source),
+        [`${slug}.spec.ts`]: emitPlaywright(plan, keys, source, data),
       }, values.force) && ok;
     }
     if (targets.has('cypress')) {
       ok = write(join(values['cypress-out'], slug), {
         'selectors.ts': selectors,
-        [`${slug}.cy.ts`]: emitCypress(plan, keys, source),
+        [`${slug}.cy.ts`]: emitCypress(plan, keys, source, data),
       }, values.force) && ok;
     }
 
     const steps = plan.sections.reduce((n, s) => n + s.steps.length, 0);
     console.log(`✓ ${source} -> ${slug}: ${steps} steps, ${plan.waits.length} response waits, ${plan.targets.length} selectors`);
-    if (plan.placeholders.length) console.log(`  ! ${plan.placeholders.length} value(s) to fill in: ${plan.placeholders.map((p) => p.key).join(', ')}`);
+    const unfilled = plan.placeholders.filter((p) => !(p.key in data));
+    if (unfilled.length) console.log(`  ! ${unfilled.length} value(s) to fill in: ${unfilled.map((p) => p.key).join(', ')}`);
     plan.notes.forEach((n) => console.log(`  ! ${n}`));
   }
   return ok ? 0 : 1;
 }
 
 function load(file: string): unknown {
+  if (!existsSync(file)) throw new Error(`${file} not found.`);
   try {
     return JSON.parse(readFileSync(file, 'utf8'));
   } catch (err) {
     throw new Error(`${file} is not valid JSON: ${err instanceof Error ? err.message : err}`);
   }
+}
+
+function loadData(file: string): PlanData {
+  const data = load(file);
+  const ok =
+    data !== null && typeof data === 'object' && !Array.isArray(data) && Object.values(data).every((v) => typeof v === 'string' && v !== '');
+  if (!ok) throw new Error(`${file} must be a JSON object of non-empty string values, keyed by placeholder name.`);
+  return data as PlanData;
 }
 
 const hash = (body: string) => createHash('sha256').update(body).digest('hex').slice(0, 12);

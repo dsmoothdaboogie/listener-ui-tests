@@ -1,9 +1,9 @@
 import type { ActionStep, Step, TestPlan } from './normalize';
-import { dataBlock, header, pathRegex, str, urlExpr, valueExpr } from './emit-utils';
+import { type PlanData, dataBlock, header, pathRegex, str, urlExpr, valueExpr } from './emit-utils';
 
 const KEYS: Record<string, string> = { Enter: '{enter}', Escape: '{esc}' };
 
-export function emitCypress(plan: TestPlan, keys: Map<string, string>, source: string): string {
+export function emitCypress(plan: TestPlan, keys: Map<string, string>, source: string, data: PlanData = {}): string {
   const get = (id: string) => `cy.get(tid(T.${keys.get(id)}))`;
   const loc = (s: ActionStep) => get(s.target) + (s.inner ? `.find(${str(s.inner)})` : '');
   // Custom controls usually hide the native input; force is needed to act on it.
@@ -37,7 +37,7 @@ export function emitCypress(plan: TestPlan, keys: Map<string, string>, source: s
     '',
     'const tid = (id: string) => `[${TEST_ID_ATTR}="${id}"]`;',
     '',
-    ...dataBlock(plan),
+    ...dataBlock(plan, data),
     `describe(${str(plan.name)}, () => {`,
     `  it('replays the recorded flow', () => {`,
     ...(plan.meta.viewport ? [`    cy.viewport(${plan.meta.viewport.width}, ${plan.meta.viewport.height});`] : []),
