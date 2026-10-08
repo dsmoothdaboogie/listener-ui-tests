@@ -1,0 +1,21 @@
+{
+  "title": "Recorded in Chrome DevTools with selector attribute data-testid",
+  "selectorAttribute": "data-testid",
+  "steps": [
+    { "type": "setViewport", "width": 1280, "height": 800, "deviceScaleFactor": 1, "isMobile": false, "hasTouch": false, "isLandscape": false },
+    { "type": "navigate", "url": "https://opus-uat.example.citi.net/deals",
+      "assertedEvents": [{ "type": "navigation", "url": "https://opus-uat.example.citi.net/deals", "title": "Deals" }] },
+    { "type": "click", "target": "main",
+      "selectors": [["aria/Search deals"], ["[data-testid=\"deal-search\"]"], ["xpath///*[@id=\"mat-input-0\"]"]],
+      "offsetX": 50, "offsetY": 10 },
+    { "type": "change", "target": "main", "value": "Acme",
+      "selectors": [["aria/Search deals"], ["[data-testid=\"deal-search\"]"]] },
+    { "type": "keyDown", "target": "main", "key": "Enter" },
+    { "type": "keyUp", "target": "main", "key": "Enter" },
+    { "type": "click", "target": "main",
+      "selectors": [["aria/New deal"], ["[data-testid=\"create-deal\"]"], ["text/New deal"]],
+      "offsetX": 20, "offsetY": 8,
+      "assertedEvents": [{ "type": "navigation", "url": "https://opus-uat.example.citi.net/deals/new", "title": "New deal" }] },
+    { "type": "hover", "target": "main", "selectors": [["[data-testid=\"help-icon\"]"]] }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "title": "uat test recording 2026-10-02T14:03:11.204Z",
+  "selectorAttribute": "data-testid",
+  "steps": [
+    {
+      "type": "customStep",
+      "name": "x-rec/session",
+      "parameters": {
+        "schemaVersion": 2,
+        "mode": "test",
+        "attribute": "data-testid",
+        "appVersion": "4.2.0",
+        "environment": "uat",
+        "startedAt": "2026-10-02T14:03:11.204Z",
+        "maskedTestIds": ["counterparty-tax-id"]
+      }
+    },
+    { "type": "setViewport", "width": 1440, "height": 900, "deviceScaleFactor": 1, "isMobile": false, "hasTouch": false, "isLandscape": true },
+    { "type": "navigate", "target": "main", "url": "https://opus-uat.example.citi.net/deals",
+      "assertedEvents": [{ "type": "navigation", "url": "https://opus-uat.example.citi.net/deals" }] },
+    { "type": "change", "target": "main", "selectors": [["[data-testid=\"deal-search\"]"]], "value": "Acme",
+      "x-rec": { "t": 2600, "route": "/deals", "testId": "deal-search" } },
+    { "type": "keyDown", "target": "main", "key": "Enter",
+      "x-rec": { "t": 2700, "route": "/deals", "testId": "deal-search",
+        "network": [{ "method": "GET", "urlPattern": "/api/deals", "status": 200 }] } },
+    { "type": "keyUp", "target": "main", "key": "Enter" },
+    { "type": "click", "target": "main", "selectors": [["[data-testid=\"create-deal\"]"]], "offsetX": 42, "offsetY": 14,
+      "assertedEvents": [{ "type": "navigation", "url": "https://opus-uat.example.citi.net/deals/new" }],
+      "x-rec": { "t": 4200, "route": "/deals", "testId": "create-deal",
+        "network": [{ "method": "GET", "urlPattern": "/api/reference/currencies", "status": 200 }] } },
+    { "type": "change", "target": "main", "selectors": [["[data-testid=\"deal-name\"] input"]], "value": "Acme Bridge Loan",
+      "x-rec": { "t": 7000, "route": "/deals/new", "testId": "deal-name", "inner": "input" } },
+    { "type": "change", "target": "main", "selectors": [["[data-testid=\"counterparty-tax-id\"]"]], "value": "",
+      "x-rec": { "t": 9100, "route": "/deals/new", "testId": "counterparty-tax-id", "masked": { "length": 9 } } },
+    { "type": "change", "target": "main", "selectors": [["[data-testid=\"deal-currency\"]"]], "value": "USD",
+      "x-rec": { "t": 9800, "route": "/deals/new", "testId": "deal-currency", "control": "select" } },
+    { "type": "click", "target": "main", "selectors": [["[data-testid=\"syndicated-flag\"]"]], "offsetX": 9, "offsetY": 9,
+      "x-rec": { "t": 10400, "route": "/deals/new", "testId": "syndicated-flag", "inner": "input[type=\"checkbox\"]", "checked": true } },
+    { "type": "waitForElement", "target": "main", "selectors": [["[data-testid=\"deal-summary\"]"]], "visible": true,
+      "x-rec": { "t": 11000, "route": "/deals/new", "testId": "deal-summary", "expectText": "Acme Bridge Loan" } },
+    { "type": "click", "target": "main", "selectors": [["[data-testid=\"save-deal\"]"]], "offsetX": 30, "offsetY": 12,
+      "assertedEvents": [{ "type": "navigation", "url": "https://opus-uat.example.citi.net/deals/DL20931X" }],
+      "x-rec": { "t": 12000, "route": "/deals/new", "testId": "save-deal",
+        "network": [
+          { "method": "POST", "urlPattern": "/api/deals", "status": 201 },
+          { "method": "GET", "urlPattern": "/api/deals/*", "status": 200 }
+        ] } },
+    { "type": "waitForElement", "target": "main", "selectors": [["[data-testid=\"deal-status\"]"]], "visible": true,
+      "x-rec": { "t": 14000, "route": "/deals/:id", "testId": "deal-status", "expectText": "Draft" } }
+  ]
+}
