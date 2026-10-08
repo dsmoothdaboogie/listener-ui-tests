@@ -100,6 +100,8 @@ jobs:
           @angular/core@latest @angular/common@latest @angular/compiler@latest @angular/forms@latest
           @angular/platform-browser@latest @angular/router@latest @angular/build@latest @angular/cli@latest
           @angular/compiler-cli@latest @angular/material@latest @angular/cdk@latest
-          @testing-library/angular@latest typescript@latest
+          @testing-library/angular@latest
+      # TypeScript must stay inside the range the latest Angular supports, not npm's latest.
+      - run: npm install --no-audit --no-fund --force "typescript@$(npm view @angular/compiler-cli@latest peerDependencies.typescript)"
       - run: npx ng build
       - run: npm test -- --watch=false
